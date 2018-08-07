@@ -152,11 +152,13 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 54a5b1b08757e0d4f868fa988a860755, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  maxNumberOfRamps: 4
+  debugImage: {fileID: 1241678417059516, guid: e5c006c397a627e469a34dd55b9e0735, type: 2}
+  maxNumberOfRamps: 6
   boardHolderX: -7.01
-  boardHolderY: -2.43
+  boardHolderY: -2.73
   yPadding: 0.85
   subterrainYPadding: 0.42
+  tallBlockyPadding: 0.41
   Columns: 15
   Rows: 5
   floorTiles:
@@ -231,7 +233,7 @@ Camera:
   far clip plane: 1000
   field of view: 60
   orthographic: 1
-  orthographic size: 3.7
+  orthographic size: 4
   m_Depth: -1
   m_CullingMask:
     serializedVersion: 2

@@ -11,12 +11,13 @@ public class LayoutCreator : MonoBehaviour
         Floor, Ramp, Tall
     }
 
-
-    public int maxNumberOfRamps = 4;
+    public GameObject debugImage;
+    public int maxNumberOfRamps = 6;
     public float boardHolderX = 0;
     public float boardHolderY = 0;
     public float yPadding = 0.85f;
     public float subterrainYPadding = 0.55f;
+    public float tallBlockyPadding = 0.41f;
     public int Columns = 12;
     public int Rows = 5;
     public GameObject[] floorTiles;
@@ -51,7 +52,11 @@ public class LayoutCreator : MonoBehaviour
 
         for (int i = 0; i < Rows; i++)
         {
-            int rampsLeft = maxNumberOfRamps;
+            int rampsLeft = Random.Range(0,maxNumberOfRamps);
+            if (rampsLeft % 2 != 0)
+            {
+                rampsLeft--;
+            }
             int lastRampIndex = -1;
             for (int j = 0; j < Columns; j++)
             {
@@ -73,36 +78,30 @@ public class LayoutCreator : MonoBehaviour
                     tiles[j][i] = TileType.Floor;
                 }
 
-                if (rampsLeft % 2 != 0)
-                {
-                    if (lastRampIndex != Columns - 1)
-                    {
-                        int tempIndex = Random.Range(lastRampIndex + 1, Columns - 1);
-
-                        {
-                            tiles[tempIndex][i] = TileType.Ramp;
-                        }
-                        for (int k = tempIndex + 1; k < Columns; k++)
-                        {
-                            tiles[k][i] = TileType.Floor;
-                        }
-                    }
-                    else
-                    {
-                        tiles[lastRampIndex][i] = TileType.Floor;
-                    }
-                    
-                }
+                
             }
-         
-            
+            if (rampsLeft % 2 != 0) {
+                if (lastRampIndex != Columns - 1) {
+                    int tempIndex = Random.Range(lastRampIndex + 1, Columns - 1);
 
+                    
+                        tiles[tempIndex][i] = TileType.Ramp;
+                    
+                    for (int k = tempIndex + 1; k < Columns; k++) {
+                        tiles[k][i] = TileType.Floor;
+                    }
+                } else {
+                    tiles[lastRampIndex][i] = TileType.Floor;
+                }
+
+            }
         }
       
     }
 
     void InstantiateTiles()
     {
+        
         for (int i = Rows-1;  i> -1; i--)
         {
             bool hasRamp = false;
@@ -118,11 +117,12 @@ public class LayoutCreator : MonoBehaviour
 
                     InstatiateFromRampArray(j,i,hasRamp);
                     hasRamp = !hasRamp;
+                    
 
                 }
                 if (tiles[j][i].Equals(TileType.Tall))
                 {
-                    InstatiateFromTileArray(j, i*0.42f,false);
+                    InstatiateFromTileArray(j, i*tallBlockyPadding,false);
 
                 }
 
@@ -135,16 +135,16 @@ public class LayoutCreator : MonoBehaviour
 
     void InstatiateFromRampArray(float x, float y, bool east)
     {
-        Vector3 position = new Vector3(x, ((y+1) * yPadding), 0f);
+        Vector3 position = new Vector3(x, ((y*yPadding)+0.41f), 0f);
         GameObject rampInstance;
         if (east)
         {
-             rampInstance = Instantiate(rampTiles[1]);
+             rampInstance = Instantiate(rampTiles[0]);
             rampInstance.gameObject.GetComponent<SpriteRenderer>().sortingOrder = (int)(Rows - y+1);
         }
         else
         {
-            rampInstance = Instantiate(rampTiles[0]);
+            rampInstance = Instantiate(rampTiles[1]);
             rampInstance.gameObject.GetComponent<SpriteRenderer>().sortingOrder = (int)(Rows - y+1);
         }
         rampInstance.transform.parent = boardHolder.transform;
@@ -166,12 +166,13 @@ public class LayoutCreator : MonoBehaviour
             tileInstance.gameObject.GetComponent<SpriteRenderer>().sortingOrder = (int) (Rows - y);
             if (tiles[(int)x][(int)y].Equals(TileType.Tall))
             {
-                Vector3 tallPosition = new Vector3(x, ((y+1)*yPadding*0.5f),0f);
-                GameObject tileInstanceTall = Instantiate(floorTiles[randomIndex]);
+                Vector3 tallPosition = new Vector3(x, ((y * yPadding) + tallBlockyPadding),0f);
+                //GameObject tileInstanceTall = Instantiate(floorTiles[randomIndex]);
+                GameObject tileInstanceTall = Instantiate(debugImage);
                 tileInstanceTall.transform.parent = boardHolder.transform;
                 tileInstanceTall.transform.localPosition = tallPosition;
                 tileInstanceTall.transform.rotation = Quaternion.identity;
-                tileInstanceTall.gameObject.GetComponent<SpriteRenderer>().sortingOrder = (int)(Rows - y);
+                tileInstanceTall.gameObject.GetComponent<SpriteRenderer>().sortingOrder = (int)(Rows - y+1);
             }
         }
         else 
