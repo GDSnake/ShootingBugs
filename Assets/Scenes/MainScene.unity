@@ -125,7 +125,7 @@ GameObject:
   - component: {fileID: 114838730}
   m_Layer: 0
   m_Name: GameManager
-  m_TagString: Untagged
+  m_TagString: GameController
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
@@ -141,6 +141,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 08188af39b1aa4c4ab0616d9f3da924a, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  spawnValues: {x: -8, y: -2.54, z: 0}
+  Enemy: {fileID: 1661152087597948, guid: 1a737260421447840a9b5318d8b789f5, type: 2}
 --- !u!114 &114838731
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -154,10 +156,10 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   debugImage: {fileID: 1241678417059516, guid: e5c006c397a627e469a34dd55b9e0735, type: 2}
   maxNumberOfRamps: 6
-  boardHolderX: -7.01
-  boardHolderY: -2.73
+  boardHolderX: -7
+  boardHolderY: -2.64
   yPadding: 0.85
-  subterrainYPadding: 0.42
+  subterrainYPadding: 0.45
   tallBlockyPadding: 0.41
   Columns: 15
   Rows: 5
