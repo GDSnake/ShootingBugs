@@ -20,7 +20,7 @@ GameObject:
   m_Component:
   - component: {fileID: 4011066659477974}
   - component: {fileID: 212711070088778636}
-  - component: {fileID: 61399326717098334}
+  - component: {fileID: 68689490850113080}
   m_Layer: 0
   m_Name: Stone Block
   m_TagString: Floor
@@ -41,8 +41,8 @@ Transform:
   m_Father: {fileID: 0}
   m_RootOrder: 0
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!61 &61399326717098334
-BoxCollider2D:
+--- !u!68 &68689490850113080
+EdgeCollider2D:
   m_ObjectHideFlags: 1
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInternal: {fileID: 100100000}
@@ -50,22 +50,14 @@ BoxCollider2D:
   m_Enabled: 1
   m_Density: 1
   m_Material: {fileID: 0}
-  m_IsTrigger: 1
+  m_IsTrigger: 0
   m_UsedByEffector: 0
   m_UsedByComposite: 0
-  m_Offset: {x: 0, y: -0.24334121}
-  m_SpriteTilingProperty:
-    border: {x: 0, y: 0, z: 0, w: 0}
-    pivot: {x: 0.5, y: 0.5}
-    oldSize: {x: 1.01, y: 1.71}
-    newSize: {x: 1.01, y: 1.71}
-    adaptiveTilingThreshold: 0.5
-    drawMode: 0
-    adaptiveTiling: 0
-  m_AutoTiling: 0
-  serializedVersion: 2
-  m_Size: {x: 1.01, y: 1.1966825}
+  m_Offset: {x: 0, y: 0}
   m_EdgeRadius: 0
+  m_Points:
+  - {x: -0.505, y: 0}
+  - {x: 0.505, y: 0}
 --- !u!212 &212711070088778636
 SpriteRenderer:
   m_ObjectHideFlags: 1

@@ -141,7 +141,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 08188af39b1aa4c4ab0616d9f3da924a, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  spawnValues: {x: -8, y: -2.54, z: 0}
+  offscreenX: -8
+  firstY: -2.2
+  spawnValues: {x: -8, y: -2.2, z: 0}
   Enemy: {fileID: 1661152087597948, guid: 1a737260421447840a9b5318d8b789f5, type: 2}
 --- !u!114 &114838731
 MonoBehaviour:
@@ -157,7 +159,7 @@ MonoBehaviour:
   debugImage: {fileID: 1241678417059516, guid: e5c006c397a627e469a34dd55b9e0735, type: 2}
   maxNumberOfRamps: 6
   boardHolderX: -7
-  boardHolderY: -2.64
+  boardHolderY: -2.37
   yPadding: 0.85
   subterrainYPadding: 0.45
   tallBlockyPadding: 0.41

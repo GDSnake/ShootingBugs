@@ -6,7 +6,9 @@ TagManager:
   tags:
   - Boundary
   - Floor
-  - Ramp
+  - East
+  - Undefined
+  - West
   layers:
   - Default
   - TransparentFX
@@ -16,7 +18,7 @@ TagManager:
   - UI
   - 
   - 
-  - 
+  - Ramp
   - 
   - 
   - 
