@@ -26,7 +26,8 @@ public class LayoutCreator : MonoBehaviour
     private TileType[][] tiles;
     private GameObject boardHolder;
 	// Use this for initialization
-	void Start () {
+	void Start ()
+	{
         boardHolder = new GameObject("BoardHolder");
 	    boardHolder.transform.position=new Vector3(boardHolderX, boardHolderY, 0);
 		SetupTilesMatrix();
@@ -46,12 +47,13 @@ public class LayoutCreator : MonoBehaviour
 
     void SetTileType()
     {
-        bool isTall = false;
 
         
 
+
         for (int i = 0; i < Rows; i++)
         {
+            bool isTall = false;
             int rampsLeft = Random.Range(0,maxNumberOfRamps);
             if (rampsLeft % 2 != 0)
             {
@@ -61,8 +63,9 @@ public class LayoutCreator : MonoBehaviour
             for (int j = 0; j < Columns; j++)
             {
                
-                if (rampsLeft>0&& Random.Range(0, 2) != 0)
+                if (rampsLeft>0&& Random.Range(0, 2) != 0&& (j==0 || !tiles[j - 1][i].Equals(TileType.Ramp)))
                 {
+                   
                     isTall = !isTall;
                     
                     tiles[j][i] = TileType.Ramp;
@@ -81,8 +84,11 @@ public class LayoutCreator : MonoBehaviour
                 
             }
             if (rampsLeft % 2 != 0) {
-                if (lastRampIndex != Columns - 1) {
-                    int tempIndex = Random.Range(lastRampIndex + 1, Columns - 1);
+                for (int k = lastRampIndex; k < Columns; k++) {
+                    tiles[k][i] = TileType.Floor;
+                }
+                /*if (lastRampIndex != Columns - 1) {
+                    int tempIndex = Random.Range(lastRampIndex + 2, Columns - 1);
 
                     
                         tiles[tempIndex][i] = TileType.Ramp;
@@ -92,7 +98,7 @@ public class LayoutCreator : MonoBehaviour
                     }
                 } else {
                     tiles[lastRampIndex][i] = TileType.Floor;
-                }
+                }*/
 
             }
         }
@@ -120,9 +126,9 @@ public class LayoutCreator : MonoBehaviour
                     
 
                 }
-                if (tiles[j][i].Equals(TileType.Tall))
+                else if (tiles[j][i].Equals(TileType.Tall)&& !tiles[j-1][i].Equals(TileType.Floor))
                 {
-                    InstatiateFromTileArray(j, i*tallBlockyPadding,false);
+                    InstatiateFromTileArray(j, i,false);
 
                 }
 
