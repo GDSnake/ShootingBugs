@@ -54,6 +54,10 @@ public class EnemyBehaviour : MonoBehaviour
             gameObject.transform.rotation = rotation;
             gameObject.GetComponent<Rigidbody2D>().velocity = new Vector2(speed, 0);
         }
+        if (other.tag == "Boundary")
+        {
+            Destroy(gameObject);
+        }
     }
 
 }

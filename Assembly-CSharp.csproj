@@ -63,6 +63,7 @@
   <ItemGroup>
     <Compile Include="Assets\Scripts\EnemyBehaviour.cs" />
     <Compile Include="Assets\Scripts\GameManager.cs" />
+    <Compile Include="Assets\Scripts\HostageBehaviour.cs" />
     <Compile Include="Assets\Scripts\LayoutCreator.cs" />
     <Reference Include="UnityEditor.StandardEvents">
       <HintPath>C:/Users/Goncalo/Documents/GitHub/ShootingBugs/Library/ScriptAssemblies/UnityEditor.StandardEvents.dll</HintPath>

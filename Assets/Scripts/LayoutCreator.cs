@@ -22,9 +22,11 @@ public class LayoutCreator : MonoBehaviour
     public int Rows = 5;
     public GameObject[] floorTiles;
     public GameObject[] rampTiles;
+    public GameObject Boundary;
 
     private TileType[][] tiles;
     private GameObject boardHolder;
+    
 	// Use this for initialization
 	void Start ()
 	{
@@ -54,7 +56,7 @@ public class LayoutCreator : MonoBehaviour
             Vector3 position= new Vector3(-1f,i*yPadding,0f);
             Vector3 position2 = new Vector3(Columns, i * yPadding, 0f);
             GameObject tileInstance = Instantiate(floorTiles[0]);
-            GameObject tileInstance2 = Instantiate(floorTiles[0]);
+            GameObject tileInstance2 = Instantiate(Boundary);
             
             tileInstance2.tag = "Boundary";
             tileInstance.gameObject.GetComponent<SpriteRenderer>().sortingOrder = (int)(Rows - i);
@@ -82,6 +84,7 @@ public class LayoutCreator : MonoBehaviour
             {
                 rampsLeft--;
             }
+            
             int lastRampIndex = -1;
             for (int j = 0; j < Columns; j++)
             {
@@ -104,12 +107,38 @@ public class LayoutCreator : MonoBehaviour
                     tiles[j][i] = TileType.Floor;
                 }
 
+               
                 
             }
             if (rampsLeft % 2 != 0) {
                 for (int k = lastRampIndex; k < Columns; k++) {
                     tiles[k][i] = TileType.Floor;
                 }
+                int unconcealed = 0;
+                for (int j = lastRampIndex; j < Columns; j++) {
+                    if (tiles[j][i] == TileType.Floor || tiles[j][i] == TileType.Ramp)
+                    {
+                        unconcealed++;
+                    }
+                    else
+                    {
+                        unconcealed = 0;
+                    }
+                    if (unconcealed == 3)
+                    {
+                        break;
+                    }
+                }
+                if (unconcealed < 3)
+                {
+                    if (tiles[Columns - 3][i] == TileType.Tall)
+                    {
+                        tiles[Columns - 3][i] = TileType.Ramp;
+                        tiles[Columns - 2][i] = TileType.Floor;
+                        tiles[Columns - 1][i] = TileType.Floor;
+                    }
+                }
+
                 /*if (lastRampIndex != Columns - 1) {
                     int tempIndex = Random.Range(lastRampIndex + 2, Columns - 1);
 
