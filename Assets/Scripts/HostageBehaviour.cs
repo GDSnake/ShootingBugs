@@ -10,7 +10,7 @@ public class HostageBehaviour : MonoBehaviour
     public float Speed;
     public Sprite Dead;
     public float jumpUpSpeed = 3;
-   [HideInInspector] public GameObject hostagePosition;
+   [HideInInspector] public Vector3 hostagePosition;
     private bool _grounded = true;
     private int _guards;
     private bool saved = false;
@@ -32,9 +32,9 @@ public class HostageBehaviour : MonoBehaviour
 
             // Move our position a step closer to the target.
             gameObject.transform.localScale= new Vector3(20*Mathf.Sin(step),20*Mathf.Sin(step));
-            gameObject.transform.position= Vector3.MoveTowards(gameObject.transform.position,hostagePosition.transform.position,step);
+            gameObject.transform.position= Vector3.MoveTowards(gameObject.transform.position,hostagePosition,step);
 	        StartCoroutine("Scale");
-	        if (gameObject.transform.position == hostagePosition.transform.position)
+	        if (gameObject.transform.position == hostagePosition)
 	        {
 	            saved = !saved;
 	            gameObject.GetComponent<Rigidbody2D>().simulated = false;
@@ -44,10 +44,7 @@ public class HostageBehaviour : MonoBehaviour
 	    }
     }
 
-    void FixedUpdate()
-    {
-      
-    }
+   
     void killHostage() {
         Ray ray = Camera.main.ScreenPointToRay(Input.mousePosition);
         RaycastHit2D hit = Physics2D.Raycast(ray.origin, ray.direction, Mathf.Infinity);
@@ -90,17 +87,31 @@ public class HostageBehaviour : MonoBehaviour
         }
         if (other.tag == "Boundary")
         {
-            Death();
+            InstantDeath();
         }
+    }
+
+    void InstantDeath()
+    {
+        gameObject.GetComponent<Rigidbody2D>().velocity = new Vector2(0, 0);
+
+        gameObject.GetComponent<SpriteRenderer>().sprite = Dead;
+        Quaternion rotation=Quaternion.Euler(0,0,-90);
+        gameObject.transform.rotation = rotation;
+        gameObject.transform.position = Vector3.MoveTowards(gameObject.transform.position, hostagePosition + new Vector3(0,-0.1f,0),100f);
+        gameObject.tag="Dead";
+        
     }
 
     void Death()
     {
         gameObject.GetComponent<Rigidbody2D>().velocity = new Vector2(0, 0);
         gameObject.GetComponent<SpriteRenderer>().sprite = Dead;
-        //Destroy(gameObject);
-    }
 
+        gameObject.tag = "Dead";
+        StartCoroutine("Blinking");
+       
+    }
     public void SaveHostage()
     {
         gameObject.GetComponent<Rigidbody2D>().velocity = new Vector2(0, 0);
@@ -132,6 +143,21 @@ public class HostageBehaviour : MonoBehaviour
             timer = 0;
             yield return new WaitForSeconds(waitTime);
         
+    }
+    IEnumerator Blinking() {
+      
+
+        yield return new WaitForSeconds(0.4f);
+        for (int i = 10; i > 0; i--) {
+            gameObject.GetComponent<SpriteRenderer>().enabled = !gameObject.GetComponent<SpriteRenderer>().enabled;
+            yield return new WaitForSeconds((float)i / 30);
+        }
+        Quaternion rotation = Quaternion.Euler(0, 0, -90);
+        gameObject.transform.rotation = rotation;
+        gameObject.transform.position = Vector3.MoveTowards(gameObject.transform.position, hostagePosition + new Vector3(0, -0.1f, 0), 100f);
+        gameObject.GetComponent<Rigidbody2D>().velocity = new Vector2(0, 0);
+
+
     }
 
 }

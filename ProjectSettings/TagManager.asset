@@ -13,6 +13,7 @@ TagManager:
   - Hostage
   - Enemy
   - Saved
+  - Dead
   layers:
   - Default
   - TransparentFX

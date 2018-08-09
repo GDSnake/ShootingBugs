@@ -15,6 +15,7 @@ public class GameManager : MonoBehaviour
     public GameObject Guard;
     public GameObject firstHostagePosition;
     private GameObject currentHostageGO;
+    private HostageBehaviour hostage;
     private bool guardAppeared = false;
     [HideInInspector] public static int NumberGuards;
 	// Use this for initialization
@@ -27,12 +28,12 @@ public class GameManager : MonoBehaviour
 	void Update () {
 	    if (NumberGuards == 0&&guardAppeared)
 	    {
-	        HostageBehaviour hostage;
-            currentHostageGO = GameObject.FindWithTag("Hostage");
-
+	         
             
+
+
             hostage = currentHostageGO.GetComponent<HostageBehaviour>();
-	        hostage.hostagePosition = firstHostagePosition;
+	        hostage.hostagePosition = firstHostagePosition.transform.position+(Vector3.left*(currentHostage-1));
             hostage.SaveHostage();
 	        guardAppeared = !guardAppeared;
 	    }
@@ -59,7 +60,10 @@ public class GameManager : MonoBehaviour
         
         Vector3 spawnPosition = new Vector3(offscreenX, ySpawn + firstY, 0);
         Quaternion spawnDirection = Quaternion.identity;
-        currentHostageGO=Instantiate(Hostages[currentHostage], spawnPosition, spawnDirection);
+        Instantiate(Hostages[currentHostage], spawnPosition, spawnDirection);
+        currentHostageGO = GameObject.FindWithTag("Hostage");
+        hostage = currentHostageGO.GetComponent<HostageBehaviour>();
+        hostage.hostagePosition = firstHostagePosition.transform.position + (Vector3.left * currentHostage);
         currentHostage++;
         guardAppeared = !guardAppeared;
     }

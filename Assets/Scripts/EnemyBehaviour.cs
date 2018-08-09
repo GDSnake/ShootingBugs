@@ -37,6 +37,7 @@ public class EnemyBehaviour : MonoBehaviour
                 GameManager.NumberGuards--;
                 gameObject.tag = "Enemy";
             }
+            gameObject.GetComponent<Collider2D>().enabled = false;
             Death();            
         }
     }
@@ -75,7 +76,7 @@ public class EnemyBehaviour : MonoBehaviour
         }
         if (other.tag == "Boundary")
         {
-            Death();
+            InstantDeath();
         }
     }
 
@@ -83,6 +84,11 @@ public class EnemyBehaviour : MonoBehaviour
     {
 
         StartCoroutine("Blinking");
+    }
+
+    void InstantDeath()
+    {
+        Destroy(gameObject);
     }
 
     IEnumerator Blinking()

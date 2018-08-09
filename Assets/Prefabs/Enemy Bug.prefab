@@ -20,9 +20,9 @@ GameObject:
   m_Component:
   - component: {fileID: 4068676396957770}
   - component: {fileID: 212487741176644604}
-  - component: {fileID: 70837118243242928}
   - component: {fileID: 50721856092576232}
   - component: {fileID: 114780524336000588}
+  - component: {fileID: 58375751171079036}
   m_Layer: 0
   m_Name: Enemy Bug
   m_TagString: Enemy
@@ -63,8 +63,8 @@ Rigidbody2D:
   m_SleepingMode: 1
   m_CollisionDetection: 0
   m_Constraints: 0
---- !u!70 &70837118243242928
-CapsuleCollider2D:
+--- !u!58 &58375751171079036
+CircleCollider2D:
   m_ObjectHideFlags: 1
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInternal: {fileID: 100100000}
@@ -75,9 +75,9 @@ CapsuleCollider2D:
   m_IsTrigger: 1
   m_UsedByEffector: 0
   m_UsedByComposite: 0
-  m_Offset: {x: 0, y: -0.21}
-  m_Size: {x: 0.92, y: 0.75}
-  m_Direction: 1
+  m_Offset: {x: 0, y: -0.15}
+  serializedVersion: 2
+  m_Radius: 0.45
 --- !u!114 &114780524336000588
 MonoBehaviour:
   m_ObjectHideFlags: 1

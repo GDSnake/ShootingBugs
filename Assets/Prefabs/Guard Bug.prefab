@@ -20,9 +20,9 @@ GameObject:
   m_Component:
   - component: {fileID: 4348485529590820}
   - component: {fileID: 212369964825712238}
-  - component: {fileID: 70288596971341352}
   - component: {fileID: 50338418562635034}
   - component: {fileID: 114631661941346990}
+  - component: {fileID: 58952683766837072}
   m_Layer: 0
   m_Name: Guard Bug
   m_TagString: Guard
@@ -63,8 +63,8 @@ Rigidbody2D:
   m_SleepingMode: 1
   m_CollisionDetection: 0
   m_Constraints: 0
---- !u!70 &70288596971341352
-CapsuleCollider2D:
+--- !u!58 &58952683766837072
+CircleCollider2D:
   m_ObjectHideFlags: 1
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInternal: {fileID: 100100000}
@@ -75,9 +75,9 @@ CapsuleCollider2D:
   m_IsTrigger: 1
   m_UsedByEffector: 0
   m_UsedByComposite: 0
-  m_Offset: {x: 0, y: -0.21}
-  m_Size: {x: 0.92, y: 0.75}
-  m_Direction: 1
+  m_Offset: {x: 0, y: -0.15}
+  serializedVersion: 2
+  m_Radius: 0.45
 --- !u!114 &114631661941346990
 MonoBehaviour:
   m_ObjectHideFlags: 1
