@@ -25,7 +25,7 @@ GameObject:
   - component: {fileID: 114438364193446012}
   m_Layer: 0
   m_Name: Character Horn Girl
-  m_TagString: Untagged
+  m_TagString: Hostage
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
@@ -89,7 +89,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: f3216bcba7c767a4392e1f80c07fb502, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  speed: 2
+  Speed: 3
+  Dead: {fileID: 21300000, guid: 456489af52167b2468508182e576a0cc, type: 3}
 --- !u!212 &212529830545690748
 SpriteRenderer:
   m_ObjectHideFlags: 1

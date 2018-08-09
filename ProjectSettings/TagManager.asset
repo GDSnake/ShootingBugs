@@ -9,6 +9,10 @@ TagManager:
   - East
   - Undefined
   - West
+  - Guard
+  - Hostage
+  - Enemy
+  - Saved
   layers:
   - Default
   - TransparentFX

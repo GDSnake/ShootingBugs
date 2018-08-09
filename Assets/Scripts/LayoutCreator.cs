@@ -133,6 +133,7 @@ public class LayoutCreator : MonoBehaviour
                 {
                     if (tiles[Columns - 3][i] == TileType.Tall)
                     {
+
                         tiles[Columns - 3][i] = TileType.Ramp;
                         tiles[Columns - 2][i] = TileType.Floor;
                         tiles[Columns - 1][i] = TileType.Floor;

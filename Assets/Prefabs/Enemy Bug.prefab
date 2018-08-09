@@ -25,7 +25,7 @@ GameObject:
   - component: {fileID: 114780524336000588}
   m_Layer: 0
   m_Name: Enemy Bug
-  m_TagString: Untagged
+  m_TagString: Enemy
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
@@ -89,7 +89,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: db0b3a21a65c3d145890ca0707b4b449, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  speed: 2
+  speed: 2.5
+  Dead: {fileID: 21300000, guid: 63a6cf509b9534744a5645959aa95976, type: 3}
 --- !u!212 &212487741176644604
 SpriteRenderer:
   m_ObjectHideFlags: 1
