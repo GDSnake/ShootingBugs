@@ -140,18 +140,7 @@ public class LayoutCreator : MonoBehaviour
                     }
                 }
 
-                /*if (lastRampIndex != Columns - 1) {
-                    int tempIndex = Random.Range(lastRampIndex + 2, Columns - 1);
-
-                    
-                        tiles[tempIndex][i] = TileType.Ramp;
-                    
-                    for (int k = tempIndex + 1; k < Columns; k++) {
-                        tiles[k][i] = TileType.Floor;
-                    }
-                } else {
-                    tiles[lastRampIndex][i] = TileType.Floor;
-                }*/
+                
 
             }
         }
@@ -226,7 +215,6 @@ public class LayoutCreator : MonoBehaviour
             if (tiles[(int)x][(int)y].Equals(TileType.Tall))
             {
                 Vector3 tallPosition = new Vector3(x, ((y * yPadding) + tallBlockyPadding),0f);
-                //GameObject tileInstanceTall = Instantiate(floorTiles[randomIndex]);
                 GameObject tileInstanceTall = Instantiate(debugImage);
                 tileInstanceTall.transform.parent = boardHolder.transform;
                 tileInstanceTall.transform.localPosition = tallPosition;

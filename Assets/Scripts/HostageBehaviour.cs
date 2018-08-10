@@ -14,6 +14,10 @@ public class HostageBehaviour : MonoBehaviour
     private bool _grounded = true;
     private int _guards;
     private bool saved = false;
+    private bool dead = false;
+
+    private bool hasBlinked = false;
+    private bool hadScalled = false;
 	// Use this for initialization
 	void Start ()
 	{
@@ -23,9 +27,18 @@ public class HostageBehaviour : MonoBehaviour
 	// Update is called once per frame
 	void Update () {
         if (Input.GetMouseButtonDown(0)) {
-            killHostage();
+            
+            KillHostage();
+            
         }
-	    if (saved)
+	    if (dead&&(hasBlinked||hadScalled))
+	    {
+            Quaternion temp = Quaternion.Euler(0, 0, -90);
+            gameObject.transform.rotation = temp;
+            gameObject.transform.position = hostagePosition + new Vector3(0, -0.1f, 0);
+            gameObject.GetComponent<Rigidbody2D>().velocity = new Vector2(0, 0);
+        }
+	    if (saved && !dead)
 	    {
             gameObject.GetComponent<Rigidbody2D>().velocity = new Vector2(0, 0);
             float step = jumpUpSpeed * Time.deltaTime;
@@ -40,15 +53,19 @@ public class HostageBehaviour : MonoBehaviour
 	            gameObject.GetComponent<Rigidbody2D>().simulated = false;
 
 	            gameObject.tag = "Saved";
+	            GameManager.SavedHostages++;
 	        }
 	    }
     }
 
    
-    void killHostage() {
+    void KillHostage() {
+        
         Ray ray = Camera.main.ScreenPointToRay(Input.mousePosition);
         RaycastHit2D hit = Physics2D.Raycast(ray.origin, ray.direction, Mathf.Infinity);
-        if (hit.collider != null && hit.transform == transform) {
+        if (hit.collider != null && hit.transform == transform && !dead && !saved) {
+            
+            
             Death();
         }
     }
@@ -63,7 +80,8 @@ public class HostageBehaviour : MonoBehaviour
             //gameObject.transform.position = new Vector3(gameObject.transform.position.x,
                 //gameObject.transform.position.y + 0.5f, gameObject.transform.position.z);
             gameObject.GetComponent<Rigidbody2D>().velocity = new Vector2(Speed, Speed* 0.2f);
-            
+            gameObject.GetComponent<SpriteRenderer>().sortingOrder++;
+
         } else if (other.tag == "East" && !_grounded && !saved) {
             _grounded = !_grounded;
             Quaternion rotation = Quaternion.Euler(0, 0, -20);
@@ -84,9 +102,14 @@ public class HostageBehaviour : MonoBehaviour
             Quaternion rotation = Quaternion.Euler(0, 0, 0);
             gameObject.transform.rotation = rotation;
             gameObject.GetComponent<Rigidbody2D>().velocity = new Vector2(Speed, 0);
+            if (other.tag == "East")
+            {
+                gameObject.GetComponent<SpriteRenderer>().sortingOrder--;
+            }
         }
-        if (other.tag == "Boundary")
+        if (other.tag == "Boundary"&&!dead)
         {
+            
             InstantDeath();
         }
     }
@@ -98,30 +121,39 @@ public class HostageBehaviour : MonoBehaviour
         gameObject.GetComponent<SpriteRenderer>().sprite = Dead;
         Quaternion rotation=Quaternion.Euler(0,0,-90);
         gameObject.transform.rotation = rotation;
-        gameObject.transform.position = Vector3.MoveTowards(gameObject.transform.position, hostagePosition + new Vector3(0,-0.1f,0),100f);
+        gameObject.transform.position = hostagePosition + new Vector3(0, -0.1f, 0);
         gameObject.tag="Dead";
-        
+        dead = true;
+        GameManager.DeadHostages++;
+
     }
 
     void Death()
     {
+
         gameObject.GetComponent<Rigidbody2D>().velocity = new Vector2(0, 0);
         gameObject.GetComponent<SpriteRenderer>().sprite = Dead;
-
+        
         gameObject.tag = "Dead";
         StartCoroutine("Blinking");
-       
+        GameManager.DeadHostages++;
+
+
+
     }
     public void SaveHostage()
     {
         gameObject.GetComponent<Rigidbody2D>().velocity = new Vector2(0, 0);
         saved = true;
-        // gameObject.GetComponent<SpriteRenderer>().sprite = Dead;
+       
     }
     IEnumerator Scale() {
         float timer = 0;
 
-        
+        if (hadScalled||dead)
+        {
+            yield break;
+        }
             // we scale all axis, so they will have the same value, 
             // so we can work with a float instead of comparing vectors
             while (maxSize > transform.localScale.x) {
@@ -131,7 +163,7 @@ public class HostageBehaviour : MonoBehaviour
             }
             // reset the timer
 
-            yield return new WaitForSeconds(waitTime);
+            yield return new WaitForSecondsRealtime(waitTime);
 
             timer = 0;
             while (1 < transform.localScale.x) {
@@ -140,23 +172,31 @@ public class HostageBehaviour : MonoBehaviour
                 yield return null;
             }
 
-            timer = 0;
-            yield return new WaitForSeconds(waitTime);
-        
+          
+            yield return new WaitForSecondsRealtime(waitTime);
+        hadScalled = true;
+
     }
     IEnumerator Blinking() {
-      
 
+        if (hasBlinked||dead)
+        {
+            Quaternion temp = Quaternion.Euler(0, 0, -90);
+            gameObject.transform.rotation = temp;
+            gameObject.transform.position = hostagePosition + new Vector3(0, -0.1f, 0);
+            yield break;
+        }
         yield return new WaitForSeconds(0.4f);
         for (int i = 10; i > 0; i--) {
             gameObject.GetComponent<SpriteRenderer>().enabled = !gameObject.GetComponent<SpriteRenderer>().enabled;
-            yield return new WaitForSeconds((float)i / 30);
+            yield return new WaitForSecondsRealtime((float)i / 30);
         }
         Quaternion rotation = Quaternion.Euler(0, 0, -90);
         gameObject.transform.rotation = rotation;
-        gameObject.transform.position = Vector3.MoveTowards(gameObject.transform.position, hostagePosition + new Vector3(0, -0.1f, 0), 100f);
+        gameObject.transform.position =  hostagePosition + new Vector3(0, -0.1f, 0);
         gameObject.GetComponent<Rigidbody2D>().velocity = new Vector2(0, 0);
-
+        hasBlinked = true;
+        dead = true;
 
     }
 

@@ -22,10 +22,7 @@ public class EnemyBehaviour : MonoBehaviour
         }
     }
 
-    void FixedUpdate()
-    {
-      
-    }
+    
 
     void hitEnemy()
     {
@@ -52,7 +49,8 @@ public class EnemyBehaviour : MonoBehaviour
             //gameObject.transform.position = new Vector3(gameObject.transform.position.x,
                 //gameObject.transform.position.y + 0.5f, gameObject.transform.position.z);
             gameObject.GetComponent<Rigidbody2D>().velocity = new Vector2(speed, speed* 0.2f);
-            
+            gameObject.GetComponent<SpriteRenderer>().sortingOrder++;
+
         } else if (other.tag == "East" && !grounded) {
             grounded = !grounded;
             Quaternion rotation = Quaternion.Euler(0, 0, -20);
@@ -61,6 +59,7 @@ public class EnemyBehaviour : MonoBehaviour
             //gameObject.transform.position = new Vector3(gameObject.transform.position.x,
                 //gameObject.transform.position.y - 0.5f, gameObject.transform.position.z);
             gameObject.GetComponent<Rigidbody2D>().velocity = new Vector2(speed, -speed*0.2f);
+            
         } 
     
         }
@@ -73,6 +72,10 @@ public class EnemyBehaviour : MonoBehaviour
             Quaternion rotation = Quaternion.Euler(0, 0, 0);
             gameObject.transform.rotation = rotation;
             gameObject.GetComponent<Rigidbody2D>().velocity = new Vector2(speed, 0);
+            if(other.tag == "East")
+            {
+                gameObject.GetComponent<SpriteRenderer>().sortingOrder--;
+            }
         }
         if (other.tag == "Boundary")
         {
