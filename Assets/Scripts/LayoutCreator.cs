@@ -11,27 +11,27 @@ public class LayoutCreator : MonoBehaviour
         Floor, Ramp, Tall
     }
 
-    public GameObject debugImage;
-    public int maxNumberOfRamps = 6;
-    public float boardHolderX = 0;
-    public float boardHolderY = 0;
-    public float yPadding = 0.85f;
-    public float subterrainYPadding = 0.55f;
-    public float tallBlockyPadding = 0.41f;
+    public GameObject DebugImage;
+    public int MaxNumberOfRamps = 6;
+    public float BoardHolderX = 0;
+    public float BoardHolderY = 0;
+    public float YPadding = 0.85f;
+    public float SubterrainYPadding = 0.55f;
+    public float TallBlockyPadding = 0.41f;
     public int Columns = 12;
     public int Rows = 5;
-    public GameObject[] floorTiles;
-    public GameObject[] rampTiles;
+    public GameObject[] FloorTiles;
+    public GameObject[] RampTiles;
     public GameObject Boundary;
 
-    private TileType[][] tiles;
-    private GameObject boardHolder;
+    private TileType[][] _tiles;
+    private GameObject _boardHolder;
     
 	// Use this for initialization
 	void Start ()
 	{
-        boardHolder = new GameObject("BoardHolder");
-	    boardHolder.transform.position=new Vector3(boardHolderX, boardHolderY, 0);
+        _boardHolder = new GameObject("BoardHolder");
+	    _boardHolder.transform.position=new Vector3(BoardHolderX, BoardHolderY, 0);
 		SetupTilesMatrix();
         SetTileType();
         InstantiateTiles();
@@ -40,11 +40,11 @@ public class LayoutCreator : MonoBehaviour
 
     void SetupTilesMatrix()
     {
-        tiles = new TileType[Columns][];
+        _tiles = new TileType[Columns][];
 
-        for (int i = 0; i < tiles.Length; i++)
+        for (int i = 0; i < _tiles.Length; i++)
         {
-            tiles[i] = new TileType[Rows];
+            _tiles[i] = new TileType[Rows];
         }
     }
 
@@ -53,18 +53,18 @@ public class LayoutCreator : MonoBehaviour
         for (int i = Rows - 1; i > -1; i--)
         {
             
-            Vector3 position= new Vector3(-1f,i*yPadding,0f);
-            Vector3 position2 = new Vector3(Columns, i * yPadding, 0f);
-            GameObject tileInstance = Instantiate(floorTiles[0]);
+            Vector3 position= new Vector3(-1f,i*YPadding,0f);
+            Vector3 position2 = new Vector3(Columns, i * YPadding, 0f);
+            GameObject tileInstance = Instantiate(FloorTiles[0]);
             GameObject tileInstance2 = Instantiate(Boundary);
             
             tileInstance2.tag = "Boundary";
             tileInstance.gameObject.GetComponent<SpriteRenderer>().sortingOrder = (int)(Rows - i);
             tileInstance2.gameObject.GetComponent<SpriteRenderer>().sortingOrder = (int)(Rows - i);
-            tileInstance.transform.parent = boardHolder.transform;
+            tileInstance.transform.parent = _boardHolder.transform;
             tileInstance.transform.localPosition = position;
             tileInstance.transform.rotation = Quaternion.identity;
-            tileInstance2.transform.parent = boardHolder.transform;
+            tileInstance2.transform.parent = _boardHolder.transform;
             tileInstance2.transform.localPosition = position2;
             tileInstance2.transform.rotation = Quaternion.identity;
         }
@@ -79,7 +79,7 @@ public class LayoutCreator : MonoBehaviour
         for (int i = 0; i < Rows; i++)
         {
             bool isTall = false;
-            int rampsLeft = Random.Range(0,maxNumberOfRamps);
+            int rampsLeft = Random.Range(0,MaxNumberOfRamps);
             if (rampsLeft % 2 != 0)
             {
                 rampsLeft--;
@@ -89,22 +89,22 @@ public class LayoutCreator : MonoBehaviour
             for (int j = 0; j < Columns; j++)
             {
                
-                if (rampsLeft>0&& Random.Range(0, 2) != 0&& (j==0 || !tiles[j - 1][i].Equals(TileType.Ramp)))
+                if (rampsLeft>0&& Random.Range(0, 2) != 0&& (j==0 || !_tiles[j - 1][i].Equals(TileType.Ramp)))
                 {
                    
                     isTall = !isTall;
                     
-                    tiles[j][i] = TileType.Ramp;
+                    _tiles[j][i] = TileType.Ramp;
                     rampsLeft--;
                     lastRampIndex = j;
                 }
                 else if (isTall)
                 {
-                    tiles[j][i] = TileType.Tall;
+                    _tiles[j][i] = TileType.Tall;
                 }
                 else
                 {
-                    tiles[j][i] = TileType.Floor;
+                    _tiles[j][i] = TileType.Floor;
                 }
 
                
@@ -112,11 +112,11 @@ public class LayoutCreator : MonoBehaviour
             }
             if (rampsLeft % 2 != 0) {
                 for (int k = lastRampIndex; k < Columns; k++) {
-                    tiles[k][i] = TileType.Floor;
+                    _tiles[k][i] = TileType.Floor;
                 }
                 int unconcealed = 0;
                 for (int j = lastRampIndex; j < Columns; j++) {
-                    if (tiles[j][i] == TileType.Floor || tiles[j][i] == TileType.Ramp)
+                    if (_tiles[j][i] == TileType.Floor || _tiles[j][i] == TileType.Ramp)
                     {
                         unconcealed++;
                     }
@@ -131,12 +131,12 @@ public class LayoutCreator : MonoBehaviour
                 }
                 if (unconcealed < 3)
                 {
-                    if (tiles[Columns - 3][i] == TileType.Tall)
+                    if (_tiles[Columns - 3][i] == TileType.Tall)
                     {
 
-                        tiles[Columns - 3][i] = TileType.Ramp;
-                        tiles[Columns - 2][i] = TileType.Floor;
-                        tiles[Columns - 1][i] = TileType.Floor;
+                        _tiles[Columns - 3][i] = TileType.Ramp;
+                        _tiles[Columns - 2][i] = TileType.Floor;
+                        _tiles[Columns - 1][i] = TileType.Floor;
                     }
                 }
 
@@ -160,7 +160,7 @@ public class LayoutCreator : MonoBehaviour
                 if (i == 0) {
                     InstatiateFromTileArray(j, i, true);
                 }
-                if (tiles[j][i].Equals(TileType.Ramp))
+                if (_tiles[j][i].Equals(TileType.Ramp))
                 {
 
                     InstatiateFromRampArray(j,i,hasRamp);
@@ -168,7 +168,7 @@ public class LayoutCreator : MonoBehaviour
                     
 
                 }
-                else if (tiles[j][i].Equals(TileType.Tall)&& !tiles[j-1][i].Equals(TileType.Floor))
+                else if (_tiles[j][i].Equals(TileType.Tall)&& !_tiles[j-1][i].Equals(TileType.Floor))
                 {
                     InstatiateFromTileArray(j, i,false);
 
@@ -183,19 +183,19 @@ public class LayoutCreator : MonoBehaviour
 
     void InstatiateFromRampArray(float x, float y, bool east)
     {
-        Vector3 position = new Vector3(x, ((y*yPadding)+0.41f), 0f);
+        Vector3 position = new Vector3(x, ((y*YPadding)+TallBlockyPadding), 0f);
         GameObject rampInstance;
         if (east)
         {
-             rampInstance = Instantiate(rampTiles[0]);
+             rampInstance = Instantiate(RampTiles[0]);
             rampInstance.gameObject.GetComponent<SpriteRenderer>().sortingOrder = (int)(Rows - y+1);
         }
         else
         {
-            rampInstance = Instantiate(rampTiles[1]);
+            rampInstance = Instantiate(RampTiles[1]);
             rampInstance.gameObject.GetComponent<SpriteRenderer>().sortingOrder = (int)(Rows - y+1);
         }
-        rampInstance.transform.parent = boardHolder.transform;
+        rampInstance.transform.parent = _boardHolder.transform;
         rampInstance.transform.localPosition = position;
         rampInstance.transform.rotation = Quaternion.identity;
 
@@ -203,20 +203,20 @@ public class LayoutCreator : MonoBehaviour
     }
     void InstatiateFromTileArray(float x, float y, bool subterrain)
     {
-        int randomIndex = Random.Range(0, floorTiles.Length);
+        int randomIndex = Random.Range(0, FloorTiles.Length);
         Vector3 position;
-        GameObject tileInstance = Instantiate(floorTiles[randomIndex]);
+        GameObject tileInstance = Instantiate(FloorTiles[randomIndex]);
         
         
         if (!subterrain)
         {
-            position = new Vector3(x, (y * yPadding), 0f);
+            position = new Vector3(x, (y * YPadding), 0f);
             tileInstance.gameObject.GetComponent<SpriteRenderer>().sortingOrder = (int) (Rows - y);
-            if (tiles[(int)x][(int)y].Equals(TileType.Tall))
+            if (_tiles[(int)x][(int)y].Equals(TileType.Tall))
             {
-                Vector3 tallPosition = new Vector3(x, ((y * yPadding) + tallBlockyPadding),0f);
-                GameObject tileInstanceTall = Instantiate(debugImage);
-                tileInstanceTall.transform.parent = boardHolder.transform;
+                Vector3 tallPosition = new Vector3(x, ((y * YPadding) + TallBlockyPadding),0f);
+                GameObject tileInstanceTall = Instantiate(DebugImage);
+                tileInstanceTall.transform.parent = _boardHolder.transform;
                 tileInstanceTall.transform.localPosition = tallPosition;
                 tileInstanceTall.transform.rotation = Quaternion.identity;
                 tileInstanceTall.gameObject.GetComponent<SpriteRenderer>().sortingOrder = (int)(Rows - y+1);
@@ -224,18 +224,15 @@ public class LayoutCreator : MonoBehaviour
         }
         else 
         {
-            position = new Vector3(x, ((y-1) * subterrainYPadding), 0f);
+            position = new Vector3(x, ((y-1) * SubterrainYPadding), 0f);
             tileInstance.gameObject.GetComponent<SpriteRenderer>().sortingOrder = 0;
         }
-        tileInstance.transform.parent = boardHolder.transform;
+        tileInstance.transform.parent = _boardHolder.transform;
         tileInstance.transform.localPosition = position;
         tileInstance.transform.rotation = Quaternion.identity;
 
 
     }
 
-	// Update is called once per frame
-	void Update () {
-		
-	}
+	
 }

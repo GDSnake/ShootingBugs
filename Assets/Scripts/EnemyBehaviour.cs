@@ -4,14 +4,15 @@ using UnityEngine;
 
 public class EnemyBehaviour : MonoBehaviour
 {
-    public float speed;
-    
+    public float Speed;
+    public int ScoreChangeKilled;
     public Sprite Dead;
-    private bool grounded = true;
+    private bool _grounded = true;
+    private bool _spawnsBonus = false;
 	// Use this for initialization
 	void Start ()
 	{
-	    gameObject.GetComponent<Rigidbody2D>().velocity = new Vector2(speed, 0);
+	    gameObject.GetComponent<Rigidbody2D>().velocity = new Vector2(Speed, 0);
 	}
 	
 	// Update is called once per frame
@@ -40,25 +41,25 @@ public class EnemyBehaviour : MonoBehaviour
     }
 
     void OnTriggerEnter2D(Collider2D other) {
-        if (other.tag == "West" && grounded)
+        if (other.tag == "West" && _grounded)
         {
 
-            grounded = !grounded;
+            _grounded = !_grounded;
             Quaternion rotation = Quaternion.Euler(0, 0, 20);
             gameObject.transform.rotation = rotation;
             //gameObject.transform.position = new Vector3(gameObject.transform.position.x,
                 //gameObject.transform.position.y + 0.5f, gameObject.transform.position.z);
-            gameObject.GetComponent<Rigidbody2D>().velocity = new Vector2(speed, speed* 0.2f);
+            gameObject.GetComponent<Rigidbody2D>().velocity = new Vector2(Speed, Speed* 0.2f);
             gameObject.GetComponent<SpriteRenderer>().sortingOrder++;
 
-        } else if (other.tag == "East" && !grounded) {
-            grounded = !grounded;
+        } else if (other.tag == "East" && !_grounded) {
+            _grounded = !_grounded;
             Quaternion rotation = Quaternion.Euler(0, 0, -20);
             gameObject.transform.rotation = rotation;
 
             //gameObject.transform.position = new Vector3(gameObject.transform.position.x,
                 //gameObject.transform.position.y - 0.5f, gameObject.transform.position.z);
-            gameObject.GetComponent<Rigidbody2D>().velocity = new Vector2(speed, -speed*0.2f);
+            gameObject.GetComponent<Rigidbody2D>().velocity = new Vector2(Speed, -Speed*0.2f);
             
         } 
     
@@ -71,7 +72,7 @@ public class EnemyBehaviour : MonoBehaviour
             
             Quaternion rotation = Quaternion.Euler(0, 0, 0);
             gameObject.transform.rotation = rotation;
-            gameObject.GetComponent<Rigidbody2D>().velocity = new Vector2(speed, 0);
+            gameObject.GetComponent<Rigidbody2D>().velocity = new Vector2(Speed, 0);
             if(other.tag == "East")
             {
                 gameObject.GetComponent<SpriteRenderer>().sortingOrder--;
@@ -85,12 +86,16 @@ public class EnemyBehaviour : MonoBehaviour
 
     void Death()
     {
-
+        GameManager.ScoreDifference = ScoreChangeKilled;
+        GameManager.ShowScoreChange = true;
+        GameManager.UpdateTotalScore = true;
         StartCoroutine("Blinking");
+        
     }
 
     void InstantDeath()
     {
+        
         Destroy(gameObject);
     }
 

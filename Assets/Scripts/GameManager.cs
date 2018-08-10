@@ -1,12 +1,17 @@
-﻿using System.Collections;
+﻿using System;
+using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.SceneManagement;
 using UnityEngine.UI;
+using Random = UnityEngine.Random;
 
 public class GameManager : MonoBehaviour
 {
     public Button RestartButton;
+
+    public Text ScoreChange;
+    public Text TotalScore;
     public Text BulletsLeft;
     public Text WinText;
     public Text BadEndingText;
@@ -22,22 +27,31 @@ public class GameManager : MonoBehaviour
     public float OffscreenX = -8;
     public float FirstY = -2.2f;
     public GameObject[] Hostages;
-    private int _currentHostage;
-    public static int SavedHostages;
-    public static int DeadHostages;
     public GameObject Enemy;
     public GameObject Guard;
     public GameObject FirstHostagePosition;
+
+    public static int SavedHostages;
+    public static int DeadHostages;
+    public static int NumberGuards;
+    public static int ScoreDifference;
+    public static bool ShowScoreChange = false;
+    public static bool UpdateTotalScore = false;
+
     private GameObject _currentHostageGo;
     private HostageBehaviour _hostage;
     private bool _guardAppeared = false;
-    private bool finished = false;
-     public static int NumberGuards;
+    private bool _finished = false;
+    private int _currentHostage;
+    private int _currentScore;
      
 	// Use this for initialization
 	void Start ()
 	{
-	
+        ScoreChange.enabled = false;
+	    TotalScore.enabled = true;
+	    _currentScore = 0;
+	    TotalScore.text = "Score :" + _currentScore;
 	    WaveText.enabled = true;
 	    WaveText.text = "Wave " + (_currentHostage + 1);
         RestartButton.gameObject.SetActive(false);
@@ -53,7 +67,27 @@ public class GameManager : MonoBehaviour
 	
 	// Update is called once per frame
 	void Update () {
-        if (Input.GetMouseButtonDown(0)&&!finished)
+	    if (ShowScoreChange)
+	    {
+	        if (ScoreDifference > 0)
+	        {
+	            ScoreChange.text = "+ " + ScoreDifference;
+	        }
+	        else
+	        {
+	            ScoreChange.text = "" + ScoreDifference;
+	        }
+	        
+	        
+	        StartCoroutine("ShowScore");
+
+	    }
+        if (UpdateTotalScore) {
+            _currentScore += ScoreDifference;
+            UpdateTotalScore = !UpdateTotalScore;
+        }
+        TotalScore.text = "Score :" + _currentScore;
+        if (Input.GetMouseButtonDown(0)&&!_finished)
         {
             ShootingAudio.Play();
             Bullets--;
@@ -64,12 +98,13 @@ public class GameManager : MonoBehaviour
             RestartButton.gameObject.SetActive(true);
            
             Time.timeScale = 0;
-	        finished = true;
+	        _finished = true;
             
 
 	    }
 	    else if (SavedHostages + DeadHostages == 5)
 	    {
+            
             Time.timeScale = 0;
 	        if (SavedHostages == 5)
 	        {
@@ -80,7 +115,7 @@ public class GameManager : MonoBehaviour
 	        {
 	            BadEndingText.enabled=true;
 	        }
-            finished = true;
+            _finished = true;
             RestartButton.gameObject.SetActive(true);
         }
         UpdateBulletsText();
@@ -91,11 +126,13 @@ public class GameManager : MonoBehaviour
 
 
             _hostage = _currentHostageGo.GetComponent<HostageBehaviour>();
-	        _hostage.hostagePosition = FirstHostagePosition.transform.position+(Vector3.left*(_currentHostage-1));
+	        _hostage.HostagePosition = FirstHostagePosition.transform.position+(Vector3.left*(_currentHostage-1));
             _hostage.SaveHostage();
 	        _guardAppeared = !_guardAppeared;
 	    }
 	}
+
+    
 
     public void Restart()
     {
@@ -133,7 +170,7 @@ public class GameManager : MonoBehaviour
         Instantiate(Hostages[_currentHostage], spawnPosition, spawnDirection);
         _currentHostageGo = GameObject.FindWithTag("Hostage");
         _hostage = _currentHostageGo.GetComponent<HostageBehaviour>();
-        _hostage.hostagePosition = FirstHostagePosition.transform.position + (Vector3.left * _currentHostage);
+        _hostage.HostagePosition = FirstHostagePosition.transform.position + (Vector3.left * _currentHostage);
         _currentHostageGo.gameObject.GetComponent<SpriteRenderer>().sortingOrder = (int)(5-ySpawn+1);
         _currentHostage++;
         _guardAppeared = !_guardAppeared;
@@ -184,5 +221,12 @@ public class GameManager : MonoBehaviour
         }
     }
 
+    IEnumerator ShowScore()
+    {
+        ScoreChange.enabled = true;
+        yield return new WaitForSecondsRealtime(0.3f);
+        ScoreChange.enabled = false;
+        ShowScoreChange = false;
+    }
 
 }
