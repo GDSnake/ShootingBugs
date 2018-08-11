@@ -206,7 +206,6 @@ public class LayoutCreator : MonoBehaviour {
             tileInstance.gameObject.GetComponent<SpriteRenderer>().sortingOrder = SetSortingOrder(y);
             if (_tiles[(int)x][(int)y].Equals(TileType.Tall)) {
                 Vector3 tallPosition = new Vector3(x, ((y * YPadding) + TallBlockyPadding), 0f);
-                randomIndex = Random.Range(0, FloorTiles.Length);
                 GameObject tileInstanceTall = Instantiate(FloorTiles[FloorTiles.Length - 1]);
                 tileInstanceTall.transform.parent = _boardHolder.transform;
                 tileInstanceTall.transform.localPosition = tallPosition;

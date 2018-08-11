@@ -76,7 +76,7 @@ public class GameManager : MonoBehaviour {
         _currentHostage = 0;
         SavedHostages = 0;
         DeadHostages = 0;
-        _maxHostages = Hostages.Length - 1;
+        _maxHostages = Hostages.Length;
         WinText.enabled = false;
         GameOverText.enabled = false;
         BadEndingText.enabled = false;
@@ -92,8 +92,12 @@ public class GameManager : MonoBehaviour {
 
         ProcessInput();
 
-
-        UpdateGameLogic();
+        
+        if (!_finished)// checks if the game has ended to prevent unecessary code execution
+        {
+            UpdateGameLogic();
+        }
+        
 
     }
 
@@ -123,18 +127,25 @@ public class GameManager : MonoBehaviour {
     }
 
     private void UpdateGameLogic() {
-        if (SavedHostages + DeadHostages == _maxHostages) { //Checks for winning condition, at least one hostage saved
+        if (SavedHostages + DeadHostages == _maxHostages) { //Checks for winning condition, at least one hostage saved 
             _currentHostageGo.gameObject.transform.localScale = new Vector3(1, 1, 1);
             Time.timeScale = 0;
             if (SavedHostages == _maxHostages) {
                 WinText.enabled = true;
-            } else {
+            } else if (DeadHostages == _maxHostages)
+            {
+                GameOverText.enabled = true;
+                RestartButton.gameObject.SetActive(true);
+                WaveText.enabled = false;
+                Time.timeScale = 0;
+            }
+            else {
                 BadEndingText.enabled = true;
             }
             WaveText.enabled = false;
             _finished = true;
             RestartButton.gameObject.SetActive(true);
-        } else if (Bullets == 0 || DeadHostages >= _maxHostages) { // Checks for losing condition, no hostage saved or no bullets left
+        } else if (Bullets == 0) { // Checks for losing condition, no hostage saved or no bullets left
             GameOverText.enabled = true;
             RestartButton.gameObject.SetActive(true);
             WaveText.enabled = false;
