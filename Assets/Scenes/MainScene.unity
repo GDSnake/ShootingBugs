@@ -245,6 +245,10 @@ MonoBehaviour:
   WaveText: {fileID: 1839257111}
   ShootingAudio: {fileID: 114838734}
   Bullets: 20
+  MinEnemiesPerWave: 2
+  MaxEnemiesPerWave: 15
+  MinConsecutiveGuards: 1
+  MaxConsecutiveGuards: 3
   StartWait: 1
   MaxSpawnWait: 3
   WaveWait: 8
@@ -258,7 +262,6 @@ MonoBehaviour:
   - {fileID: 1728518127629336, guid: 0b79fe96e00195443967d0113e269a5c, type: 2}
   - {fileID: 1203445348156084, guid: 5285b64db8c03a64d9d9386ed1acbb38, type: 2}
   Enemy: {fileID: 1661152087597948, guid: 1a737260421447840a9b5318d8b789f5, type: 2}
-  Guard: {fileID: 1522982655507426, guid: 56dc754bad3b6464cbda0c01619ac5c2, type: 2}
   FirstHostagePosition: {fileID: 864168129}
 --- !u!114 &114838731
 MonoBehaviour:
@@ -271,7 +274,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 54a5b1b08757e0d4f868fa988a860755, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  MaxNumberOfRamps: 6
+  MinimumUnconcealedBlocks: 3
+  MaxNumberOfBridges: 2
   BoardHolderX: -7
   BoardHolderY: -2.42
   YPadding: 0.85

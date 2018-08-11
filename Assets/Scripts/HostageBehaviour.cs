@@ -27,6 +27,7 @@ public class HostageBehaviour : MonoBehaviour {
     private bool _dead = false;
     private bool _hasBlinked = false;
     private bool _hasScalled = false;
+    private int _maxSortingOrder = 99;
     // Use this for initialization
     void Start() {
         gameObject.GetComponent<Rigidbody2D>().velocity = new Vector2(Speed, 0);
@@ -35,25 +36,26 @@ public class HostageBehaviour : MonoBehaviour {
     // Update is called once per frame
     void Update() {
 
-        if (_hasScalled) // to stop unexpected scalling behaviour after reaching the destination on the top right corner
+        if (gameObject.transform.lossyScale.x > 1&&_hasScalled) // to stop unexpected scalling behaviour after reaching the destination on the top right corner
         {
-            _hasScalled = !_hasScalled;
-            transform.localScale = new Vector3(1, 1, 1);
+                
             StopCoroutine("Scale");
+            transform.localScale = Vector3.one;
         }
-        if (Input.GetMouseButtonDown(0) && !_saved) {
 
-            KillHostage();
+        ProcessInput();
 
-        }
-        if (_dead && (_hasBlinked || _hasScalled)) {
+
+        if (IsDead()) {
             Quaternion temp = Quaternion.Euler(0, 0, -90);
             gameObject.transform.rotation = temp;
             gameObject.transform.position = HostagePosition + new Vector3(0, -0.1f, 0);
-            gameObject.GetComponent<Rigidbody2D>().velocity = new Vector2(0, 0);
+            gameObject.GetComponent<Rigidbody2D>().velocity = Vector2.zero;
         }
-        if (_saved && !_dead && gameObject.tag != "Saved") {
-            gameObject.GetComponent<Rigidbody2D>().velocity = new Vector2(0, 0);
+
+        if (IsSaved())
+        {
+            gameObject.GetComponent<Rigidbody2D>().velocity = Vector2.zero;
             float step = JumpUpSpeed * Time.deltaTime;
 
             // Move our position a step closer to the target.
@@ -61,26 +63,54 @@ public class HostageBehaviour : MonoBehaviour {
 
             StartCoroutine("Scale");
 
-
-
             if (gameObject.transform.position == HostagePosition) {
-
-
                 gameObject.GetComponent<Rigidbody2D>().simulated = false;
-
                 gameObject.tag = "Saved";
-                GameManager.SavedHostages++;
-                GameManager.ScoreDifference = ScoreChangeSaved;
-                GameManager.ShowScoreChange = true;
-                GameManager.UpdateTotalScore = true;
+                UpdateGameLogic();
+                UpdateUI();
             }
         }
     }
 
     /// <summary>
+    /// Verifies if hostage has died and finished all animations
+    /// </summary>
+    /// <returns></returns>
+    private bool IsDead()
+    {
+        return _dead && (_hasBlinked || _hasScalled);
+    }
+
+    /// <summary>
+    /// Verifies if the hostage has been saved and prevents overlap of death and saved animations
+    /// </summary>
+    /// <returns></returns>
+    private bool IsSaved()
+    {
+        return _saved && !_dead && gameObject.tag != "Saved";
+    }
+
+    private void UpdateUI() {
+      
+        GameManager.ScoreDifference = ScoreChangeSaved;
+        GameManager.ShowScoreChange = true;
+        GameManager.UpdateTotalScore = true;
+    }
+
+    private void ProcessInput() {
+        if (Input.GetMouseButtonDown(0) && !_saved) {
+            KillHostage();
+        }
+    }
+
+    private void UpdateGameLogic() {
+        GameManager.SavedHostages++;
+    }
+
+    /// <summary>
     /// Checks if an hostage is hitted by the mouse using raycasthit, if is hitted, kills the hostage
     /// </summary>
-    void KillHostage() {
+    private void KillHostage() {
 
         Ray ray = Camera.main.ScreenPointToRay(Input.mousePosition);
         RaycastHit2D hit = Physics2D.Raycast(ray.origin, ray.direction, Mathf.Infinity);
@@ -127,6 +157,7 @@ public class HostageBehaviour : MonoBehaviour {
                 gameObject.GetComponent<SpriteRenderer>().sortingOrder--;
             }
         }
+
         if (other.tag == "Boundary" && !_dead) {
 
             InstantDeath();
@@ -136,8 +167,8 @@ public class HostageBehaviour : MonoBehaviour {
     /// <summary>
     /// Instantly kills the hostage GO, and displaying the dead sprite on the top right
     /// </summary>
-    void InstantDeath() {
-        gameObject.GetComponent<Rigidbody2D>().velocity = new Vector2(0, 0);
+    private void InstantDeath() {
+        gameObject.GetComponent<Rigidbody2D>().velocity = Vector2.zero;
 
         gameObject.GetComponent<SpriteRenderer>().sprite = Dead;
         Quaternion rotation = Quaternion.Euler(0, 0, -90);
@@ -155,9 +186,9 @@ public class HostageBehaviour : MonoBehaviour {
     /// <summary>
     /// Kills the hostage GO, changes it's sprite into the dead hostage and blinks it's body. Then displays the dead hostage on the top right
     /// </summary>
-    void Death() {
+    private void Death() {
 
-        gameObject.GetComponent<Rigidbody2D>().velocity = new Vector2(0, 0);
+        gameObject.GetComponent<Rigidbody2D>().velocity = Vector2.zero;
         gameObject.GetComponent<SpriteRenderer>().sprite = Dead;
 
         gameObject.tag = "Dead";
@@ -175,7 +206,8 @@ public class HostageBehaviour : MonoBehaviour {
     /// </summary>
     public void SaveHostage() {
         _saved = true;
-        gameObject.GetComponent<Rigidbody2D>().velocity = new Vector2(0, 0);
+        gameObject.GetComponent<SpriteRenderer>().sortingOrder = _maxSortingOrder;
+        gameObject.GetComponent<Rigidbody2D>().velocity = Vector2.zero;
 
 
     }
@@ -191,10 +223,10 @@ public class HostageBehaviour : MonoBehaviour {
         }
 
         // We scale all axis, so they will have the same value, so we can work with a float instead of comparing vectors
-        
+
         while (MaxSize > transform.localScale.x) {
             timer += Time.deltaTime;
-            transform.localScale += new Vector3(1, 1, 1) * Time.deltaTime * GrowFactor;
+            transform.localScale += Vector3.one * Time.deltaTime * GrowFactor;
             yield return null;
         }
 
@@ -204,13 +236,13 @@ public class HostageBehaviour : MonoBehaviour {
         timer = 0;
         while (1 < transform.localScale.x) {
             timer += Time.deltaTime;
-            transform.localScale -= new Vector3(1, 1, 1) * Time.deltaTime * GrowFactor;
+            transform.localScale -= Vector3.one * Time.deltaTime * GrowFactor;
             yield return null;
         }
 
 
         yield return new WaitForSecondsRealtime(WaitTime);
-        gameObject.transform.localScale = new Vector3(1, 1, 1);
+        gameObject.transform.localScale = Vector3.one;
         _hasScalled = true;
 
     }
@@ -236,7 +268,7 @@ public class HostageBehaviour : MonoBehaviour {
         Quaternion rotation = Quaternion.Euler(0, 0, -90);
         gameObject.transform.rotation = rotation;
         gameObject.transform.position = HostagePosition + new Vector3(0, -0.1f, 0);
-        gameObject.GetComponent<Rigidbody2D>().velocity = new Vector2(0, 0);
+        gameObject.GetComponent<Rigidbody2D>().velocity = Vector2.zero;
         _hasBlinked = true;
 
 
