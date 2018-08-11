@@ -3,15 +3,19 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using Random = UnityEngine.Random;
-
+/// <summary>
+/// This Class creates the random generated layout
+/// </summary>
 public class LayoutCreator : MonoBehaviour
 {
+    
     public enum TileType
     {
         Floor, Ramp, Tall
     }
-
-    public GameObject DebugImage;
+    /// <summary>
+    /// Max number of ramps that a map has,it must be a pair number(one up and a down ramp pair)
+    /// </summary>
     public int MaxNumberOfRamps = 6;
     public float BoardHolderX = 0;
     public float BoardHolderY = 0;
@@ -38,6 +42,9 @@ public class LayoutCreator : MonoBehaviour
         SpawnBoundaries();
 	}
 
+    /// <summary>
+    /// This function creates the map matrix, with the default value of every cell as Floor
+    /// </summary>
     void SetupTilesMatrix()
     {
         _tiles = new TileType[Columns][];
@@ -47,7 +54,9 @@ public class LayoutCreator : MonoBehaviour
             _tiles[i] = new TileType[Rows];
         }
     }
-
+    /// <summary>
+    /// This class spawns the boundaries of the map, offscreen, the spawn location is on the left side, and the right side spawns the Boundary tiles to destroy objects that go off screen
+    /// </summary>
     void SpawnBoundaries()
     {
         for (int i = Rows - 1; i > -1; i--)
@@ -70,30 +79,28 @@ public class LayoutCreator : MonoBehaviour
         }
 
     }
+    /// <summary>
+    /// This function sets the type of each tile randommly
+    /// </summary>
     void SetTileType()
     {
-
-        
-
-
         for (int i = 0; i < Rows; i++)
         {
-            bool isTall = false;
-            int rampsLeft = Random.Range(0,MaxNumberOfRamps);
-            if (rampsLeft % 2 != 0)
+           
+            bool isTall = false; //variable to control if puts tall block between two ramps
+            int rampsLeft = Random.Range(0,MaxNumberOfRamps); 
+            if (rampsLeft % 2 != 0) // checks if ramp number is pair, if not decreases 1 ramp to make it pair
             {
                 rampsLeft--;
             }
             
-            int lastRampIndex = -1;
+            int lastRampIndex = -1; //used to check if there is a left ramp without a matching right ramp pair
             for (int j = 0; j < Columns; j++)
             {
                
-                if (rampsLeft>0&& Random.Range(0, 2) != 0&& (j==0 || !_tiles[j - 1][i].Equals(TileType.Ramp)))
-                {
-                   
+                if (rampsLeft>0&& Random.Range(0, 2) != 0&& (j==0 || !_tiles[j - 1][i].Equals(TileType.Ramp))) // the range checks for a 50/50 probability of having a ramp or not
+                {                                                                                               // if has probability to create a ramp, checks if block before is tall, to avoid directly adjacent ramps
                     isTall = !isTall;
-                    
                     _tiles[j][i] = TileType.Ramp;
                     rampsLeft--;
                     lastRampIndex = j;
@@ -105,16 +112,13 @@ public class LayoutCreator : MonoBehaviour
                 else
                 {
                     _tiles[j][i] = TileType.Floor;
-                }
-
-               
-                
+                } 
             }
-            if (rampsLeft % 2 != 0) {
+            if (rampsLeft % 2 != 0) { // if ramps left is not a pair number, the ramps placed are odd, meaning we have to delete the last one, and subsequent tall blocks
                 for (int k = lastRampIndex; k < Columns; k++) {
                     _tiles[k][i] = TileType.Floor;
                 }
-                int unconcealed = 0;
+                int unconcealed = 0; //used to check if at least 3 consecutive unconcealed blocks exist ( ramps and floor are treated as unconcealing)
                 for (int j = lastRampIndex; j < Columns; j++) {
                     if (_tiles[j][i] == TileType.Floor || _tiles[j][i] == TileType.Ramp)
                     {
@@ -131,22 +135,26 @@ public class LayoutCreator : MonoBehaviour
                 }
                 if (unconcealed < 3)
                 {
-                    if (_tiles[Columns - 3][i] == TileType.Tall)
+                    /*
+                    *if the pathway has less than three unconcealed blocks, by our verification on the main loop, the third block is tall, 
+                    *because 2 ramps must have to have a floor between them, this only happens a "bridge" is generated from beggining to the end of the pathway
+                    */
+                    if (_tiles[Columns - 3][i] == TileType.Tall) 
                     {
 
                         _tiles[Columns - 3][i] = TileType.Ramp;
                         _tiles[Columns - 2][i] = TileType.Floor;
                         _tiles[Columns - 1][i] = TileType.Floor;
                     }
+                    
                 }
-
-                
-
             }
         }
       
     }
-
+    /// <summary>
+    /// This function, travels the tiles type jagged array, and calls the tile or ramp instantiator funcion
+    /// </summary>
     void InstantiateTiles()
     {
         
@@ -164,23 +172,22 @@ public class LayoutCreator : MonoBehaviour
                 {
 
                     InstatiateFromRampArray(j,i,hasRamp);
-                    hasRamp = !hasRamp;
-                    
-
+                    hasRamp = !hasRamp;            
                 }
                 else if (_tiles[j][i].Equals(TileType.Tall)&& !_tiles[j-1][i].Equals(TileType.Floor))
                 {
                     InstatiateFromTileArray(j, i,false);
 
                 }
-
-
-
-
             }
         }
     }
-
+    /// <summary>
+    /// Instantiates a ramp object, left or right ramp according to the bool east, and gives a yPadding to be over the base floor block
+    /// </summary>
+    /// <param name="x">X position on the jagged array</param>
+    /// <param name="y">Y position on the jagged array</param>
+    /// <param name="east">verifies if is a east or west ramp</param>
     void InstatiateFromRampArray(float x, float y, bool east)
     {
         Vector3 position = new Vector3(x, ((y*YPadding)+TallBlockyPadding), 0f);
@@ -201,9 +208,18 @@ public class LayoutCreator : MonoBehaviour
 
 
     }
+    /// <summary>
+    /// Instantiates tiles from the tiles array, randomly. 
+    /// If subterrain gives a negative padding.
+    /// If tall gives a positive padding and chooses the wall block gameobject to simulate a bridge.
+    /// It uses the boardHolder gameobject as parent transform.
+    /// </summary>
+    /// <param name="x">X position on the jagged array</param>
+    /// <param name="y">Y position on the jagged array</param>
+    /// <param name="subterrain">Checks if its a front row subterrain block</param>
     void InstatiateFromTileArray(float x, float y, bool subterrain)
     {
-        int randomIndex = Random.Range(0, FloorTiles.Length);
+        int randomIndex = Random.Range(0, FloorTiles.Length-1);
         Vector3 position;
         GameObject tileInstance = Instantiate(FloorTiles[randomIndex]);
         
@@ -215,7 +231,8 @@ public class LayoutCreator : MonoBehaviour
             if (_tiles[(int)x][(int)y].Equals(TileType.Tall))
             {
                 Vector3 tallPosition = new Vector3(x, ((y * YPadding) + TallBlockyPadding),0f);
-                GameObject tileInstanceTall = Instantiate(DebugImage);
+                randomIndex = Random.Range(0, FloorTiles.Length);
+                GameObject tileInstanceTall = Instantiate(FloorTiles[FloorTiles.Length-1]);
                 tileInstanceTall.transform.parent = _boardHolder.transform;
                 tileInstanceTall.transform.localPosition = tallPosition;
                 tileInstanceTall.transform.rotation = Quaternion.identity;

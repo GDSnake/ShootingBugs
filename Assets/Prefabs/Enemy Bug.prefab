@@ -91,7 +91,12 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   Speed: 2.5
   ScoreChangeKilled: 100
-  Dead: {fileID: 21300000, guid: 63a6cf509b9534744a5645959aa95976, type: 3}
+  GemScoreMultiplier: 5
+  Dead:
+  - {fileID: 21300000, guid: 63a6cf509b9534744a5645959aa95976, type: 3}
+  - {fileID: 21300000, guid: 0cd282561aa712a47bb13e78224d0bf7, type: 3}
+  - {fileID: 21300000, guid: ea66973ac842d6f4997a07439b74d439, type: 3}
+  - {fileID: 21300000, guid: b6de0845b270ffa4cbd41f565141a291, type: 3}
 --- !u!212 &212487741176644604
 SpriteRenderer:
   m_ObjectHideFlags: 1

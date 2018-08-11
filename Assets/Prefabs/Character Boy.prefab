@@ -92,8 +92,8 @@ MonoBehaviour:
   ScoreChangeDead: -200
   ScoreChangeSaved: 500
   MaxSize: 3
-  GrowFactor: 1
-  WaitTime: 0.5
+  GrowFactor: 0.02
+  WaitTime: 0.3
   Speed: 2.5
   Dead: {fileID: 21300000, guid: f9ec778877017be47aae70e323e56501, type: 3}
   JumpUpSpeed: 3

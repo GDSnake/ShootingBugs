@@ -14,6 +14,7 @@ TagManager:
   - Enemy
   - Saved
   - Dead
+  - Gem
   layers:
   - Default
   - TransparentFX
