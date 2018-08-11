@@ -47,6 +47,10 @@ public class GameManager : MonoBehaviour {
     /// </summary>
     public static bool ShowScoreChange = false;
     public static bool UpdateTotalScore = false;
+    /// <summary>
+    /// Prevents continuing shooting after game ending
+    /// </summary>
+    public static bool _finished = false;
 
     private GameObject _currentHostageGo;
     private HostageBehaviour _hostage;
@@ -56,10 +60,6 @@ public class GameManager : MonoBehaviour {
     /// Checks if a hostage has appeared, to prevent nullpointing in update
     /// </summary>
     private bool _hostageAppeared = false;
-    /// <summary>
-    /// Prevents continuing shooting after game ending
-    /// </summary>
-    private bool _finished = false;
     private int _currentHostage;
     private int _currentScore;
 
@@ -80,6 +80,7 @@ public class GameManager : MonoBehaviour {
         WinText.enabled = false;
         GameOverText.enabled = false;
         BadEndingText.enabled = false;
+        _finished = false;
         StartCoroutine("Spawner");
     }
 

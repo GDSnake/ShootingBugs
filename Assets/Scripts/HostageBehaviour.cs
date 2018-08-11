@@ -98,7 +98,7 @@ public class HostageBehaviour : MonoBehaviour {
     }
 
     private void ProcessInput() {
-        if (Input.GetMouseButtonDown(0) && !_saved) {
+        if (Input.GetMouseButtonDown(0) && !_saved && !GameManager._finished) {
             KillHostage();
         }
     }
