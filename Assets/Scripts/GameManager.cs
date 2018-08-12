@@ -20,7 +20,7 @@ public class GameManager : MonoBehaviour {
     public AudioSource ShootingAudio;
 
     public int Bullets;
-    public int MaxRows=5;
+    public int MaxRows = 5;
     public int MinEnemiesPerWave = 2;
     public int MaxEnemiesPerWave = 15;
     public int MinConsecutiveGuards = 1;
@@ -31,6 +31,8 @@ public class GameManager : MonoBehaviour {
     public float OffscreenX = -8;
     public float FirstY = -2.2f;
     public float PathwayPositionOffset = 0.9f;
+    public float TimeBetweenGuards = 0.4f;
+    public float ShowScoreTimer = 0.3f;
     public GameObject[] Hostages;
     public GameObject Enemy;
     /// <summary>
@@ -55,7 +57,7 @@ public class GameManager : MonoBehaviour {
     private GameObject _currentHostageGo;
     private HostageBehaviour _hostage;
     private int _maxHostages;
-    
+
     /// <summary>
     /// Checks if a hostage has appeared, to prevent nullpointing in update
     /// </summary>
@@ -63,14 +65,28 @@ public class GameManager : MonoBehaviour {
     private int _currentHostage;
     private int _currentScore;
 
+    private readonly string _scoreText = "Score :";
+    private readonly string _waveText = "Wave ";
+    private readonly string _bulletText = "Bullets Left: ";
+
+    // WaitForSeconds caching to save on garbage allocation
+    private WaitForSeconds _nextWaveWait;
+    private readonly WaitForSeconds _oneSecondWait = new WaitForSeconds(1);
+    private WaitForSeconds _gameStartWait;
+    private WaitForSeconds _timeBetweenGuards;
+    private WaitForSeconds _timeToShowScore;
     // Use this for initialization
     void Start() {
+        _timeToShowScore = new WaitForSeconds(ShowScoreTimer);
+        _timeBetweenGuards = new WaitForSeconds(TimeBetweenGuards);
+        _nextWaveWait = new WaitForSeconds(WaveWait - 1);
+        _gameStartWait = new WaitForSeconds(StartWait);
         ScoreChange.enabled = false;
         TotalScore.enabled = true;
         _currentScore = 0;
-        TotalScore.text = "Score :" + _currentScore;
+        TotalScore.text = _scoreText + _currentScore;
         WaveText.enabled = true;
-        WaveText.text = "Wave " + (_currentHostage + 1);
+        WaveText.text = _waveText + (_currentHostage + 1);
         RestartButton.gameObject.SetActive(false);
         Time.timeScale = 1;
         _currentHostage = 0;
@@ -81,7 +97,7 @@ public class GameManager : MonoBehaviour {
         GameOverText.enabled = false;
         BadEndingText.enabled = false;
         _finished = false;
-        StartCoroutine("Spawner");
+        StartCoroutine(Spawner());
     }
 
     // Update is called once per frame
@@ -89,16 +105,12 @@ public class GameManager : MonoBehaviour {
 
         UpdateUI();
 
-
         ProcessInput();
 
-        
         if (!_finished)// checks if the game has ended to prevent unecessary code execution
         {
             UpdateGameLogic();
         }
-        
-
     }
 
     private void UpdateUI() {
@@ -108,13 +120,13 @@ public class GameManager : MonoBehaviour {
             } else {
                 ScoreChange.text = "" + ScoreDifference;
             }
-            StartCoroutine("ShowScore");
+            StartCoroutine(ShowScore());
         }
 
         if (UpdateTotalScore) {
             _currentScore += ScoreDifference;
             UpdateTotalScore = !UpdateTotalScore;
-            TotalScore.text = "Score : " + _currentScore;
+            TotalScore.text = _scoreText + _currentScore;
         }
     }
 
@@ -132,14 +144,12 @@ public class GameManager : MonoBehaviour {
             Time.timeScale = 0;
             if (SavedHostages == _maxHostages) {
                 WinText.enabled = true;
-            } else if (DeadHostages == _maxHostages)
-            {
+            } else if (DeadHostages == _maxHostages) {
                 GameOverText.enabled = true;
                 RestartButton.gameObject.SetActive(true);
                 WaveText.enabled = false;
                 Time.timeScale = 0;
-            }
-            else {
+            } else {
                 BadEndingText.enabled = true;
             }
             WaveText.enabled = false;
@@ -168,11 +178,11 @@ public class GameManager : MonoBehaviour {
 
     }
     private void UpdateBulletsText() {
-        BulletsLeft.text = "Bullets Left: " + Bullets;
+        BulletsLeft.text = _bulletText + Bullets;
     }
 
     private int SetSortingOrder(float ySpawn) {
-        return (int)(MaxRows - ySpawn) +1;
+        return (int)(MaxRows - ySpawn) + 1;
     }
 
     /// <summary>
@@ -206,7 +216,6 @@ public class GameManager : MonoBehaviour {
     /// </summary>
     /// <param name="ySpawn">The pathway to be spawned</param>
     private void SpawnHostage(float ySpawn) {
-
         Vector3 spawnPosition = new Vector3(OffscreenX, ySpawn + FirstY, 0);
         Quaternion spawnDirection = Quaternion.identity;
         Instantiate(Hostages[_currentHostage], spawnPosition, spawnDirection);
@@ -216,16 +225,15 @@ public class GameManager : MonoBehaviour {
         _currentHostageGo.gameObject.GetComponent<SpriteRenderer>().sortingOrder = SetSortingOrder(ySpawn);
         _hostageAppeared = true;
         _currentHostage++;
-
     }
     /// <summary>
     /// Main coroutine that spawns GameObjects
     /// </summary>
     /// <returns></returns>
-    IEnumerator Spawner() {
+    private IEnumerator Spawner() {
 
-        yield return new WaitForSeconds(StartWait);
-
+        yield return _gameStartWait;
+ 
         while (true) {
             WaveText.enabled = false;
 
@@ -239,13 +247,13 @@ public class GameManager : MonoBehaviour {
                     float ySpawn = Random.Range(0, MaxRows) * PathwayPositionOffset;
                     for (int j = 0; j < firstGuards; j++) {
                         SpawnGuard(ySpawn);
-                        yield return new WaitForSeconds(0.4f);
+                        yield return _timeBetweenGuards;
                     }
 
                     SpawnHostage(ySpawn);
 
                     for (int j = 0; j < secondGuards; j++) {
-                        yield return new WaitForSeconds(0.4f);
+                        yield return _timeBetweenGuards;
                         SpawnGuard(ySpawn);
                     }
                 } else
@@ -254,10 +262,10 @@ public class GameManager : MonoBehaviour {
                 yield return new WaitForSeconds(Random.Range(0.5f, MaxSpawnWait));
             }
 
-            yield return new WaitForSeconds(WaveWait - 1);
+            yield return _nextWaveWait;
             WaveText.enabled = true;
-            WaveText.text = "Wave " + (_currentHostage + 1);
-            yield return new WaitForSeconds(1);
+            WaveText.text = _waveText + (_currentHostage + 1);
+            yield return _oneSecondWait;
             WaveText.enabled = false;
         }
     }
@@ -266,9 +274,9 @@ public class GameManager : MonoBehaviour {
     /// Coroutine that shows GO point value during certain time
     /// </summary>
     /// <returns></returns>
-    IEnumerator ShowScore() {
+    private IEnumerator ShowScore() {
         ScoreChange.enabled = true;
-        yield return new WaitForSecondsRealtime(0.3f); // this causes unexpected behaviour if two or more temporary scores are shown in less than 0.3 seconds, only the first one shows
+        yield return _timeToShowScore; // this causes unexpected behaviour if two or more temporary scores are shown in less than 0.3 seconds, only the first one shows
         ScoreChange.enabled = false;
         ShowScoreChange = false;
     }

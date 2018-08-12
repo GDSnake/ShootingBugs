@@ -256,6 +256,8 @@ MonoBehaviour:
   OffscreenX: -8
   FirstY: -2.2
   PathwayPositionOffset: 0.9
+  TimeBetweenGuards: 0.4
+  ShowScoreTimer: 0.3
   Hostages:
   - {fileID: 1302083930033326, guid: 522d600d26d20fb499ff512b2bf26c9b, type: 2}
   - {fileID: 1323609698914216, guid: e55ec5780ef99814cb55aa7a87990696, type: 2}
@@ -848,7 +850,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0.5, y: 1}
   m_AnchorMax: {x: 0.5, y: 1}
-  m_AnchoredPosition: {x: 0, y: -205.7}
+  m_AnchoredPosition: {x: 0, y: -103.87}
   m_SizeDelta: {x: 175.3, y: 86.6}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &862667090
@@ -871,7 +873,7 @@ MonoBehaviour:
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInternal: {fileID: 0}
   m_GameObject: {fileID: 862667088}
-  m_Enabled: 0
+  m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 708705254, guid: f70555f144d8491a825f0804e09c671c, type: 3}
   m_Name: 

@@ -4,8 +4,10 @@ using UnityEngine;
 
 public class HostageBehaviour : MonoBehaviour {
 
+    public float ySpeedMultiplier = 0.2f;
     public int ScoreChangeDead;
     public int ScoreChangeSaved;
+    public float StartBlinkTimer = 0.4f;
     public float MaxSize;
     public float GrowFactor;
     public float WaitTime;
@@ -28,8 +30,15 @@ public class HostageBehaviour : MonoBehaviour {
     private bool _hasBlinked = false;
     private bool _hasScalled = false;
     private int _maxSortingOrder = 99;
+
+    // WaitForSeconds caching to save on garbage allocation
+    private WaitForSeconds _waitForBlink;
+    private WaitForSecondsRealtime _waitScaled;
+
     // Use this for initialization
     void Start() {
+        _waitForBlink = new WaitForSeconds(StartBlinkTimer);
+        _waitScaled = new WaitForSecondsRealtime(WaitTime);
         gameObject.GetComponent<Rigidbody2D>().velocity = new Vector2(Speed, 0);
     }
 
@@ -39,7 +48,7 @@ public class HostageBehaviour : MonoBehaviour {
         if (gameObject.transform.lossyScale.x > 1&&_hasScalled) // to stop unexpected scalling behaviour after reaching the destination on the top right corner
         {
                 
-            StopCoroutine("Scale");
+            StopCoroutine(Scale());
             transform.localScale = Vector3.one;
         }
 
@@ -52,8 +61,7 @@ public class HostageBehaviour : MonoBehaviour {
             gameObject.transform.position = HostagePosition + new Vector3(0, -0.1f, 0);
             gameObject.GetComponent<Rigidbody2D>().velocity = Vector2.zero;
         }
-
-        if (IsSaved())
+        else if (IsSaved())
         {
             gameObject.GetComponent<Rigidbody2D>().velocity = Vector2.zero;
             float step = JumpUpSpeed * Time.deltaTime;
@@ -61,7 +69,7 @@ public class HostageBehaviour : MonoBehaviour {
             // Move our position a step closer to the target.
             gameObject.transform.position = Vector3.MoveTowards(gameObject.transform.position, HostagePosition, step);
 
-            StartCoroutine("Scale");
+            StartCoroutine(Scale());
 
             if (gameObject.transform.position == HostagePosition) {
                 gameObject.GetComponent<Rigidbody2D>().simulated = false;
@@ -126,19 +134,19 @@ public class HostageBehaviour : MonoBehaviour {
     /// </summary>
     /// <param name="other"></param>
     void OnTriggerEnter2D(Collider2D other) {
-        if (other.tag == "West" && _grounded && !_saved) {
 
+        if (other.tag == "West" && _grounded && !_saved) {
             _grounded = !_grounded;
             Quaternion rotation = Quaternion.Euler(0, 0, 20);
             gameObject.transform.rotation = rotation;
-            gameObject.GetComponent<Rigidbody2D>().velocity = new Vector2(Speed, Speed * 0.2f);
+            gameObject.GetComponent<Rigidbody2D>().velocity = new Vector2(Speed, Speed * ySpeedMultiplier);
             gameObject.GetComponent<SpriteRenderer>().sortingOrder++;
 
         } else if (other.tag == "East" && !_grounded && !_saved) {
             _grounded = !_grounded;
             Quaternion rotation = Quaternion.Euler(0, 0, -20);
             gameObject.transform.rotation = rotation;
-            gameObject.GetComponent<Rigidbody2D>().velocity = new Vector2(Speed, -Speed * 0.2f);
+            gameObject.GetComponent<Rigidbody2D>().velocity = new Vector2(Speed, -Speed * ySpeedMultiplier);
         }
 
     }
@@ -192,7 +200,7 @@ public class HostageBehaviour : MonoBehaviour {
         gameObject.GetComponent<SpriteRenderer>().sprite = Dead;
 
         gameObject.tag = "Dead";
-        StartCoroutine("Blinking");
+        StartCoroutine(Blinking());
         GameManager.DeadHostages++;
         GameManager.ScoreDifference = ScoreChangeDead;
         GameManager.ShowScoreChange = true;
@@ -215,33 +223,27 @@ public class HostageBehaviour : MonoBehaviour {
     /// This coroutine scales up and down the Hostage GO over time
     /// </summary>
     /// <returns></returns>
-    IEnumerator Scale() {
-        float timer = 0;
+    private IEnumerator Scale() {
+    ;
 
         if (_hasScalled || _dead) {
             yield break;
         }
 
         // We scale all axis, so they will have the same value, so we can work with a float instead of comparing vectors
-
         while (MaxSize > transform.localScale.x) {
-            timer += Time.deltaTime;
             transform.localScale += Vector3.one * Time.deltaTime * GrowFactor;
             yield return null;
         }
 
-
-        yield return new WaitForSecondsRealtime(WaitTime);
-        // reset the timer
-        timer = 0;
+        yield return _waitScaled;
+     
         while (1 < transform.localScale.x) {
-            timer += Time.deltaTime;
+          
             transform.localScale -= Vector3.one * Time.deltaTime * GrowFactor;
             yield return null;
         }
 
-
-        yield return new WaitForSecondsRealtime(WaitTime);
         gameObject.transform.localScale = Vector3.one;
         _hasScalled = true;
 
@@ -252,16 +254,15 @@ public class HostageBehaviour : MonoBehaviour {
     /// The rotates and positions the dead sprite on the top right side
     /// </summary>
     /// <returns></returns>
-    IEnumerator Blinking() {
-
+    private IEnumerator Blinking() {
         if (_hasBlinked) {
             Quaternion temp = Quaternion.Euler(0, 0, -90);
             gameObject.transform.rotation = temp;
             gameObject.transform.position = HostagePosition + new Vector3(0, -0.1f, 0);
             yield break;
         }
-        yield return new WaitForSeconds(0.4f);
-        for (int i = 10; i > 0; i--) {
+        yield return _waitForBlink;
+        for (int i = 10; i > 0; i--) { //makes blink faster over timer
             gameObject.GetComponent<SpriteRenderer>().enabled = !gameObject.GetComponent<SpriteRenderer>().enabled;
             yield return new WaitForSecondsRealtime((float)i / 30);
         }
@@ -270,8 +271,6 @@ public class HostageBehaviour : MonoBehaviour {
         gameObject.transform.position = HostagePosition + new Vector3(0, -0.1f, 0);
         gameObject.GetComponent<Rigidbody2D>().velocity = Vector2.zero;
         _hasBlinked = true;
-
-
     }
 
 }

@@ -61,7 +61,7 @@ public class LayoutCreator : MonoBehaviour {
     }
 
     /// <summary>
-    /// This class spawns the boundaries of the map, offscreen, the spawn location is on the left side, and the right side spawns the Boundary tiles to destroy objects that go off screen
+    /// This function spawns the boundaries of the map, offscreen, the spawn location is on the left side, and the right side spawns the Boundary tiles to destroy objects that go off screen
     /// </summary>
     private void SpawnBoundaries() {
         for (int i = Rows - 1; i > -1; i--) {

@@ -6,13 +6,18 @@ public class EnemyBehaviour : MonoBehaviour {
 
     public float Speed;
     public float ySpeedMultiplier = 0.2f;
+    public float StartBlinkTimer = 0.4f;
     public int ScoreChangeKilled;
     public int GemScoreMultiplier;
     public Sprite[] Dead;
-    
+
+    // WaitForSeconds caching to save on garbage allocation
+    private WaitForSeconds _waitForBlink;
+
     private bool _grounded = true;
     // Use this for initialization
     void Start() {
+        _waitForBlink = new WaitForSeconds(StartBlinkTimer);
         gameObject.GetComponent<Rigidbody2D>().velocity = new Vector2(Speed, 0);
     }
 
@@ -89,7 +94,7 @@ public class EnemyBehaviour : MonoBehaviour {
     /// This function destroys an enemy that is hitted on gem form and updates the score
     /// </summary>
     private void GemHitted() {
-        StopCoroutine("Blinking");
+        StopCoroutine(Blinking());
         GameManager.ScoreDifference = ScoreChangeKilled * GemScoreMultiplier;
         GameManager.ShowScoreChange = true;
         GameManager.UpdateTotalScore = true;
@@ -102,7 +107,7 @@ public class EnemyBehaviour : MonoBehaviour {
         gameObject.GetComponent<Rigidbody2D>().velocity = Vector2.zero;
         gameObject.GetComponent<SpriteRenderer>().sprite = Dead[Random.Range(1, Dead.Length)];
         gameObject.tag = "Gem";
-        StartCoroutine("Blinking");
+        StartCoroutine(Blinking());
     }
     /// <summary>
     /// Kills an enemy and changes it's sprite into a squashed enemy and makes the sprite blink
@@ -113,7 +118,7 @@ public class EnemyBehaviour : MonoBehaviour {
         GameManager.UpdateTotalScore = true;
         gameObject.GetComponent<SpriteRenderer>().sprite = Dead[0];
         gameObject.GetComponent<SpriteRenderer>().sortingOrder++;
-        StartCoroutine("Blinking");
+        StartCoroutine(Blinking());
     }
 
     /// <summary>
@@ -127,9 +132,9 @@ public class EnemyBehaviour : MonoBehaviour {
     /// This coroutine simulates the GO sprite blink, by enabling and disabling it during X time and then destroys the GO
     /// </summary>
     /// <returns></returns>
-    IEnumerator Blinking() {
+    private IEnumerator Blinking() {
         gameObject.GetComponent<Rigidbody2D>().velocity = Vector2.zero;
-        yield return new WaitForSeconds(0.4f);
+        yield return _waitForBlink;
         for (int i = 10; i > 0; i--) {
             gameObject.GetComponent<SpriteRenderer>().enabled = !gameObject.GetComponent<SpriteRenderer>().enabled;
             yield return new WaitForSeconds((float)i / 30);
